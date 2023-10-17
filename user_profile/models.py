@@ -12,6 +12,6 @@ class UserProfile(models.Model):
     )
     avatar = models.ImageField(null=True)
     cover_picture = models.ImageField(null=True)
-    date_of_birth = models.DateField(max_length=8)
+    date_of_birth = models.DateField(max_length=10)
     following = models.ManyToManyField("self")
     followers = models.ManyToManyField("self")
