@@ -10,6 +10,8 @@ class UserProfile(models.Model):
         on_delete=models.CASCADE,
         related_name="profile",
     )
+    avatar = models.ImageField(null=True)
+    cover_picture = models.ImageField(null=True)
     date_of_birth = models.DateField(max_length=8)
     following = models.ManyToManyField("self")
     followers = models.ManyToManyField("self")
