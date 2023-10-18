@@ -7,8 +7,7 @@ from django.contrib.auth.models import User
 
 
 # Create your views here.
-class UserRegisterationViewSet(
-    viewsets.mixins.CreateModelMixin, viewsets.GenericViewSet
-):
+class UserRegisterationViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
     serializer_class = UserSerializer
+    queryset = User.objects.all()
