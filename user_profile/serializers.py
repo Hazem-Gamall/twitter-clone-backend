@@ -9,7 +9,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = ["date_of_birth"]
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserRegistirationSerializer(serializers.ModelSerializer):
     profile = UserProfileSerializer()
     name = serializers.CharField(max_length=30, source="first_name")
 
@@ -23,3 +23,9 @@ class UserSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**validated_data)
         UserProfile.objects.create(user=user, date_of_birth=profile["date_of_birth"])
         return user
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = "__all__"

@@ -3,5 +3,5 @@ from . import views
 from rest_framework import routers
 
 router = routers.DefaultRouter()
-router.register(r"user", views.UserRegisterationViewSet, basename="user")
-urlpatterns = [path("", include(router.urls))]
+router.register(r"users", views.UserViewSet)
+urlpatterns = router.urls
