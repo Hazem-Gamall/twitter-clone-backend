@@ -21,8 +21,17 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def create(self, validated_data):
-        print("create")
         user_data = validated_data.pop("user")
+        follower_data = (
+            validated_data.pop("followers") if "followers" in validated_data else []
+        )
+        following_data = (
+            validated_data.pop("following") if "following" in validated_data else []
+        )
+
         user = User.objects.create_user(**user_data)
         user_profile = UserProfile.objects.create(user=user, **validated_data)
+        user_profile.followers.add(*follower_data)
+        user_profile.following.add(*following_data)
+
         return user_profile

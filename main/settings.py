@@ -34,7 +34,7 @@ CORS_ORIGIN_WHITELIST = ["http://localhost:5173", "http://127.0.0.1:5173"]
 INSTALLED_APPS = [
     "user_auth",
     "posts",
-    "user_profile",
+    "user_profile.apps.UserProfileConfig",
     "corsheaders",
     "rest_framework",
     "django.contrib.admin",

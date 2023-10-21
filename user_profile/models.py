@@ -13,5 +13,8 @@ class UserProfile(models.Model):
     avatar = models.ImageField(null=True)
     cover_picture = models.ImageField(null=True)
     date_of_birth = models.DateField(max_length=10)
-    following = models.ManyToManyField("self")
-    followers = models.ManyToManyField("self")
+    following = models.ManyToManyField("self", blank=True)
+    followers = models.ManyToManyField("self", blank=True)
+
+    def __str__(self) -> str:
+        return self.user.username
