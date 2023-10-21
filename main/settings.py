@@ -32,6 +32,7 @@ CORS_ORIGIN_WHITELIST = ["http://localhost:5173", "http://127.0.0.1:5173"]
 # Application definition
 
 INSTALLED_APPS = [
+    "user_auth",
     "posts",
     "user_profile",
     "corsheaders",
@@ -141,4 +142,6 @@ REST_FRAMEWORK = {
 }
 
 
-SIMPLE_JWT = {"ACCESS_TOKEN_LIFETIME": timedelta(minutes=20)}
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=20),
+}

@@ -1,0 +1,3 @@
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.tokens import Token
+from user_profile.serializers import UserProfileSerializer
