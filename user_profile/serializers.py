@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 
 class UserSerializer(serializers.ModelSerializer):
     name = serializers.CharField(max_length=35, source="first_name")
+    date_joined = serializers.DateTimeField(format="%m-%d-%Y")
 
     class Meta:
         model = User
