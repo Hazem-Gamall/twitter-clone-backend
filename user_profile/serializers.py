@@ -14,11 +14,23 @@ class UserSerializer(serializers.ModelSerializer):
 
 class UserProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer()
+    follower_count = serializers.SerializerMethodField("get_follower_count")
+    following_count = serializers.SerializerMethodField("get_following_count")
 
     class Meta:
         model = UserProfile
         # fields = ["user", "date_of_birth"]
+        extra_kwargs = {
+            "followers": {"write_only": True},
+            "following": {"write_only": True},
+        }
         fields = "__all__"
+
+    def get_follower_count(self, obj):
+        return obj.followers.count()
+
+    def get_following_count(self, obj):
+        return obj.following.count()
 
     def create(self, validated_data):
         user_data = validated_data.pop("user")
