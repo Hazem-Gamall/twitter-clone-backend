@@ -30,6 +30,7 @@ class UserPostsViewset(viewsets.ViewSet):
         return Response(serialized_posts)
 
     def create(self, request, posts_user__username):
+        print(request.data)
         username = posts_user__username
         user_posts = self.queryset.get(user__username=username).posts
         data = {**request.data, "username": username}
@@ -37,5 +38,6 @@ class UserPostsViewset(viewsets.ViewSet):
         if serialized_post.is_valid():
             saved_post = serialized_post.save()
             user_posts.add(saved_post)
-
+        else:
+            return Response(serialized_post.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response(PostSerializer(saved_post).data)
