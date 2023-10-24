@@ -10,7 +10,7 @@ class UserProfile(models.Model):
         on_delete=models.CASCADE,
         related_name="profile",
     )
-    bio = models.CharField(max_length=160, null=True, blank=True)
+    bio = models.CharField(max_length=160, default="", blank=True)
     avatar = models.ImageField(null=True)
     cover_picture = models.ImageField(null=True)
     date_of_birth = models.DateField(max_length=10)
