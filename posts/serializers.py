@@ -4,7 +4,6 @@ from rest_framework import status
 from rest_framework import serializers
 from main.serializer_validation_mixins import ReadOnlyOrUnkownFieldErrorMixin
 from .models import Media, Post
-from user_profile.serializers import UserProfileSerializer
 from user_profile.models import UserProfile
 
 
@@ -36,15 +35,19 @@ class PostSerializer(ReadOnlyOrUnkownFieldErrorMixin, serializers.ModelSerialize
     username = serializers.CharField(
         max_length=35, source="user__user__username", required=False
     )
+    replies_count = serializers.SerializerMethodField("get_replies_count")
 
     class Meta:
         model = Post
         fields = "__all__"
-        read_only_fields = ["replies", "post_user"]
+        read_only_fields = ["post_user"]
         extra_kwargs = {
             "user": {"write_only": True, "required": False},
             "username": {"write_only": True, "requrequiredired": False},
         }
+
+    def get_replies_count(self, obj):
+        return obj.replies.count()
 
     def get_post_user(self, obj):
         return {
