@@ -24,7 +24,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        exclude = ["followers", "following"]
+        fields = "__all__"
 
     def validate(self, attrs):
         if hasattr(self, "initial_data") and (
