@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.core.validators import RegexValidator
 
-
 # Create your models here.
 
 
@@ -16,6 +15,7 @@ class UserProfile(models.Model):
     avatar = models.ImageField(null=True)
     cover_picture = models.ImageField(null=True)
     date_of_birth = models.DateField(max_length=10)
+    liked_posts = models.ManyToManyField("posts.Post", related_name="likes")
 
     def __str__(self) -> str:
         return self.user.username
