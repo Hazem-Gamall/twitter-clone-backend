@@ -5,6 +5,7 @@ from rest_framework.decorators import action
 from user_profile.permissions import IsAuthenticatedOrCreateOrOptions
 from .serializers import UserProfileSerializer
 from posts.serializers import PostSerializer
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 
 
 # Create your views here.
@@ -12,6 +13,7 @@ class UserViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrCreateOrOptions]
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
     lookup_field = "user__username"
 
     @action(["GET"], detail=False, url_path="(?P<user__username>[^/.]+)/posts")
