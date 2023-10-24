@@ -25,7 +25,9 @@ class UserPostsViewset(viewsets.ViewSet):
     def list(self, request, posts_user__username):
         username = posts_user__username
 
-        posts = self.queryset.get(user__username=username).posts.all()
+        posts = (
+            self.queryset.get(user__username=username).posts.all().order_by("-creation")
+        )
         serialized_posts = PostSerializer(posts, many=True).data
         return Response(serialized_posts)
 
