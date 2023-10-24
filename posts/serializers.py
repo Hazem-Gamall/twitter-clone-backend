@@ -51,7 +51,7 @@ class PostSerializer(ReadOnlyOrUnkownFieldErrorMixin, serializers.ModelSerialize
             "id": obj.id,
             "name": obj.user.user.first_name,
             "username": obj.user.user.username,
-            "avatar": obj.user.avatar if obj.user.avatar else None,
+            "avatar": obj.user.avatar.url if obj.user.avatar else None,
         }
 
     def create(self, validated_data):
