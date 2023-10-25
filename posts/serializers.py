@@ -50,6 +50,11 @@ class PostSerializer(ReadOnlyOrUnkownFieldErrorMixin, serializers.ModelSerialize
             "username": {"write_only": True, "requrequiredired": False},
         }
 
+    def get_fields(self):
+        fields = super().get_fields()
+        fields["embed"] = PostSerializer()
+        return fields
+
     def get_replies_count(self, obj):
         return obj.replies.count()
 
