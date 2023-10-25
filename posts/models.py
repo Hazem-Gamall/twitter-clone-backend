@@ -11,7 +11,9 @@ class Post(models.Model, UpdatableModelMixin):
     last_edit = models.DateTimeField(auto_now=True)
     text = models.CharField(max_length=280)
     repost = models.BooleanField(default=False)
-    embed = models.OneToOneField("self", models.SET_NULL, null=True, blank=True)
+    embed = models.ForeignKey(
+        "self", models.SET_NULL, null=True, blank=True, related_name="reposts"
+    )
     replies = models.ManyToManyField("self", blank=True)
 
 

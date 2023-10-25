@@ -36,6 +36,7 @@ class PostSerializer(ReadOnlyOrUnkownFieldErrorMixin, serializers.ModelSerialize
         max_length=35, source="user__user__username", required=False
     )
     replies_count = serializers.SerializerMethodField("get_replies_count")
+    repost_count = serializers.SerializerMethodField("get_repost_count")
     likes_count = serializers.SerializerMethodField("get_likes_count")
     liked_by_user = serializers.SerializerMethodField("get_liked_by_user")
 
@@ -67,6 +68,9 @@ class PostSerializer(ReadOnlyOrUnkownFieldErrorMixin, serializers.ModelSerialize
             return obj.likes.filter(user=self.context["user"]).exists()
 
         return False
+
+    def get_repost_count(self, obj: Post):
+        return obj.reposts.count()
 
     def create(self, validated_data):
         if "user__user__username" in validated_data:
