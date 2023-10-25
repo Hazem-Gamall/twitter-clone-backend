@@ -39,6 +39,7 @@ class PostSerializer(ReadOnlyOrUnkownFieldErrorMixin, serializers.ModelSerialize
     repost_count = serializers.SerializerMethodField("get_repost_count")
     likes_count = serializers.SerializerMethodField("get_likes_count")
     liked_by_user = serializers.SerializerMethodField("get_liked_by_user")
+    reposted_by_user = serializers.SerializerMethodField("get_reposted_by_user")
 
     class Meta:
         model = Post
@@ -67,6 +68,11 @@ class PostSerializer(ReadOnlyOrUnkownFieldErrorMixin, serializers.ModelSerialize
         if hasattr(self, "context") and "user" in self.context:
             return obj.likes.filter(user=self.context["user"]).exists()
 
+        return False
+
+    def get_reposted_by_user(self, obj: Post):
+        if hasattr(self, "context") and "user" in self.context:
+            return self.context["user"].profile.posts.filter(embed=obj).exists()
         return False
 
     def get_repost_count(self, obj: Post):
