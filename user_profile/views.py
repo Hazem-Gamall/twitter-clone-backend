@@ -32,7 +32,11 @@ class UserLikedPostsViewSet(viewsets.ViewSet):
     def create(self, request, likes_user__username):
         if "post" not in request.data:
             raise exceptions.ValidationError({"post": "required field"})
+        if "like" not in request.data:
+            raise exceptions.ValidationError({"like": "required field"})
+
         username = likes_user__username
+
         try:
             post = Post.objects.get(id=request.data.pop("post"))
         except:
@@ -40,10 +44,14 @@ class UserLikedPostsViewSet(viewsets.ViewSet):
                 {"post": "the post id provided doesn't exist."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        print(post)
-        self.queryset.get(user__username=username).liked_posts.add(post)
 
-        return Response(PostSerializer(post).data)
+        if request.data["like"]:
+            self.queryset.get(user__username=username).liked_posts.add(post)
+        else:
+            if post in self.queryset.get(user__username=username).liked_posts.all():
+                self.queryset.get(user__username=username).liked_posts.remove(post)
+
+        return Response(PostSerializer(post, context={"user": request.user}).data)
 
 
 class UserPostsViewSet(viewsets.ViewSet):
@@ -56,7 +64,9 @@ class UserPostsViewSet(viewsets.ViewSet):
         posts = (
             self.queryset.get(user__username=username).posts.all().order_by("-creation")
         )
-        serialized_posts = PostSerializer(posts, many=True).data
+        serialized_posts = PostSerializer(
+            posts, many=True, context={"user": request.user}
+        ).data
         return Response(serialized_posts)
 
     def create(self, request, posts_user__username):
