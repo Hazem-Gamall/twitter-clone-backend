@@ -47,12 +47,12 @@ class PostSerializer(ReadOnlyOrUnkownFieldErrorMixin, serializers.ModelSerialize
         read_only_fields = ["post_user"]
         extra_kwargs = {
             "user": {"write_only": True, "required": False},
-            "username": {"write_only": True, "requrequiredired": False},
+            "username": {"write_only": True, "required": False},
         }
 
     def get_fields(self):
         fields = super().get_fields()
-        fields["embed"] = PostSerializer()
+        fields["embed"] = PostSerializer(required=False)
         return fields
 
     def get_replies_count(self, obj):
@@ -91,9 +91,7 @@ class PostSerializer(ReadOnlyOrUnkownFieldErrorMixin, serializers.ModelSerialize
             except:
                 raise ValidationError(
                     {
-                        "username": [
-                            f"Invalid username '{username}' - object does not exist."
-                        ]
+                        "username": f"Invalid username '{username}' - object does not exist."
                     }
                 )
             print("user", user)
