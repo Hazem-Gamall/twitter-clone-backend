@@ -19,7 +19,7 @@ class UserViewSet(viewsets.ModelViewSet):
     lookup_field = "user__username"
 
 
-class UserLikedPostsViewSet(viewsets.ViewSet):
+class UserLikesPostsViewSet(viewsets.ViewSet):
     permission_classes = [IsOwner]
     queryset = UserProfile.objects.all()
 
@@ -52,6 +52,54 @@ class UserLikedPostsViewSet(viewsets.ViewSet):
                 self.queryset.get(user__username=username).liked_posts.remove(post)
 
         return Response(PostSerializer(post, context={"user": request.user}).data)
+
+
+# TODO: generify
+class UserRepostPostsViewSet(viewsets.ViewSet):
+    permission_classes = [IsOwner]
+    queryset = UserProfile.objects.all()
+
+    def list(self, request, repost_user__username):
+        username = repost_user__username
+        respoted_posts = self.queryset.get(user__username=username).posts.filter(
+            repost=True
+        )
+        serialized_reposted_posts = PostSerializer(respoted_posts, many=True).data
+        return Response(serialized_reposted_posts)
+
+    def create(self, request, repost_user__username):
+        if "post" not in request.data:
+            raise exceptions.ValidationError({"post": "required field"})
+
+        username = repost_user__username
+
+        try:
+            incoming_post = Post.objects.get(id=request.data.pop("post"))
+        except:
+            return Response(
+                {"post": "the post id provided doesn't exist."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if (
+            not self.queryset.get(user__username=username)
+            .posts.filter(embed=incoming_post)
+            .exists()
+        ):
+            repost_post = Post.objects.create(
+                user=self.queryset.get(user__username=username),
+                repost=True,
+                embed=incoming_post,
+            )
+            return Response(
+                PostSerializer(repost_post, context={"user": request.user}).data
+            )
+        else:
+            self.queryset.get(user__username=username).posts.filter(
+                embed=incoming_post
+            ).delete(),
+
+        return Response(status=status.HTTP_200_OK)
 
 
 class UserPostsViewSet(viewsets.ViewSet):
