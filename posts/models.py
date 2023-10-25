@@ -14,7 +14,9 @@ class Post(models.Model, UpdatableModelMixin):
     embed = models.ForeignKey(
         "self", models.SET_NULL, null=True, blank=True, related_name="reposts"
     )
-    replies = models.ManyToManyField("self", blank=True)
+    reply_to = models.ForeignKey(
+        "self", blank=True, on_delete=models.SET_NULL, null=True, related_name="replies"
+    )
 
 
 from django.core.exceptions import ValidationError
