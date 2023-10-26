@@ -109,9 +109,23 @@ class UserPostsViewSet(viewsets.ViewSet):
     def list(self, request, posts_user__username):
         username = posts_user__username
 
-        posts = (
-            self.queryset.get(user__username=username).posts.all().order_by("-creation")
-        )
+        print(request.query_params)
+
+        if (
+            "with_replies" in request.query_params
+            and request.query_params["with_replies"] == "true"
+        ):
+            posts = (
+                self.queryset.get(user__username=username)
+                .posts.all()
+                .order_by("-creation")
+            )
+        else:
+            posts = (
+                self.queryset.get(user__username=username)
+                .posts.filter(reply_to__isnull=True)
+                .order_by("-creation")
+            )
         serialized_posts = PostSerializer(
             posts, many=True, context={"user": request.user}
         ).data
