@@ -53,6 +53,7 @@ class PostSerializer(ReadOnlyOrUnkownFieldErrorMixin, serializers.ModelSerialize
     def get_fields(self):
         fields = super().get_fields()
         fields["embed"] = PostSerializer(required=False)
+        fields["reply_to"] = PostSerializer(required=False)
         return fields
 
     def get_replies_count(self, obj):
