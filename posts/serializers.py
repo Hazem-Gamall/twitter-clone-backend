@@ -29,6 +29,55 @@ class UpdatePostSerializer(
         return instance
 
 
+class CreatePostSerializer(
+    ReadOnlyOrUnkownFieldErrorMixin, serializers.ModelSerializer
+):
+    media = MediaSerialzer(many=True, allow_null=True, required=False)
+    username = serializers.CharField(
+        max_length=35, source="user__user__username", required=False
+    )
+
+    class Meta:
+        model = Post
+        fields = "__all__"
+        extra_kwargs = {
+            "user": {"write_only": True, "required": False},
+            "username": {"write_only": True, "required": False},
+        }
+
+    def get_fields(self):
+        fields = super().get_fields()
+        fields["embed"] = PostSerializer(required=False)
+        return fields
+
+    def create(self, validated_data):
+        if "user__user__username" in validated_data:
+            username = validated_data.pop("user__user__username")
+            try:
+                user = UserProfile.objects.get(user__username=username)
+            except:
+                raise ValidationError(
+                    {
+                        "username": f"Invalid username '{username}' - object does not exist."
+                    }
+                )
+            print("user", user)
+            post = Post.objects.create(user=user, **validated_data)
+        elif "user" in validated_data:
+            post = Post.objects.create(**validated_data)
+        else:
+            raise ValidationError("You must provied a user or username field")
+
+        if "media" in validated_data:
+            media_data = validated_data.pop("media")
+            Media.objects.create(
+                post=post,
+                **media_data,
+            )
+
+        return post
+
+
 class PostSerializer(ReadOnlyOrUnkownFieldErrorMixin, serializers.ModelSerializer):
     media = MediaSerialzer(many=True, allow_null=True, required=False)
     post_user = serializers.SerializerMethodField("get_post_user")
@@ -44,7 +93,6 @@ class PostSerializer(ReadOnlyOrUnkownFieldErrorMixin, serializers.ModelSerialize
     class Meta:
         model = Post
         fields = "__all__"
-        read_only_fields = ["post_user"]
         extra_kwargs = {
             "user": {"write_only": True, "required": False},
             "username": {"write_only": True, "required": False},
@@ -83,30 +131,3 @@ class PostSerializer(ReadOnlyOrUnkownFieldErrorMixin, serializers.ModelSerialize
 
     def get_repost_count(self, obj: Post):
         return obj.reposts.count()
-
-    def create(self, validated_data):
-        if "user__user__username" in validated_data:
-            username = validated_data.pop("user__user__username")
-            try:
-                user = UserProfile.objects.get(user__username=username)
-            except:
-                raise ValidationError(
-                    {
-                        "username": f"Invalid username '{username}' - object does not exist."
-                    }
-                )
-            print("user", user)
-            post = Post.objects.create(user=user, **validated_data)
-        elif "user" in validated_data:
-            post = Post.objects.create(**validated_data)
-        else:
-            raise ValidationError("You must provied a user or username field")
-
-        if "media" in validated_data:
-            media_data = validated_data.pop("media")
-            Media.objects.create(
-                post=post,
-                **media_data,
-            )
-
-        return post

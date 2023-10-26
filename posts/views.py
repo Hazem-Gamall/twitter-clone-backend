@@ -4,6 +4,7 @@ from rest_framework.decorators import action
 from .serializers import PostSerializer, UpdatePostSerializer
 from .models import Post
 from rest_framework import permissions, status, response, exceptions
+from rest_framework.parsers import FormParser, MultiPartParser, JSONParser
 
 # Create your views here.
 
