@@ -10,10 +10,10 @@ posts_router = NestedSimpleRouter(router, r"users", lookup="posts")
 posts_router.register(r"posts", views.UserPostsViewSet, basename="user-posts")
 
 likes_router = NestedSimpleRouter(router, r"users", lookup="likes")
-likes_router.register(r"likes", views.UserLikesPostsViewSet, basename="user-likes")
+likes_router.register(r"likes", views.UserPostsLikesViewSet, basename="user-likes")
 
 repost_router = NestedSimpleRouter(router, r"users", lookup="repost")
-repost_router.register(r"repost", views.UserRepostPostsViewSet, basename="user-repost")
+repost_router.register(r"repost", views.UserPostsRepostsViewSet, basename="user-repost")
 
 urlpatterns = [
     path(r"", include(router.urls)),

@@ -7,7 +7,7 @@ from rest_framework import status
 from posts.models import Post
 
 
-class UserLikesPostsViewSet(viewsets.ViewSet):
+class UserPostsLikesViewSet(viewsets.ViewSet):
     permission_classes = [IsOwner]
     queryset = UserProfile.objects.all()
 

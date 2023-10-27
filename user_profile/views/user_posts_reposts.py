@@ -8,7 +8,7 @@ from posts.models import Post
 
 
 # TODO: generify
-class UserRepostPostsViewSet(viewsets.ViewSet):
+class UserPostsRepostsViewSet(viewsets.ViewSet):
     permission_classes = [IsOwner]
     queryset = UserProfile.objects.all()
 
