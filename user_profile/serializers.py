@@ -80,7 +80,7 @@ class UserFollowingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserFollowing
-        fields = ["user_profile"]
+        exclude = ["following_user_profile"]
 
 
 class UserFollowersSerializer(serializers.ModelSerializer):
@@ -88,4 +88,4 @@ class UserFollowersSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserFollowing
-        fields = ["following_user_profile"]
+        exclude = ["user_profile"]
