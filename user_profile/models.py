@@ -1,11 +1,12 @@
 from django.db import models
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.core.validators import RegexValidator
+from main.abstract_models import ModelWithUser
 
 # Create your models here.
 
 
-class UserProfile(models.Model):
+class UserProfile(ModelWithUser):
     user = models.OneToOneField(
         "auth.User",
         on_delete=models.CASCADE,
@@ -17,17 +18,33 @@ class UserProfile(models.Model):
     date_of_birth = models.DateField(max_length=10)
     liked_posts = models.ManyToManyField("posts.Post", related_name="likes")
 
+    @property
+    def follower_count(self):
+        return self.followers.count()
+
+    @property
+    def following_count(self):
+        return self.following.count()
+
+    def get_user(self):
+        return self.user
+
     def __str__(self) -> str:
         return self.user.username
 
 
 class UserFollowing(models.Model):
-    user_id = models.ForeignKey(
-        UserProfile, related_name="following", on_delete=models.CASCADE
+    class Meta:
+        unique_together = [["user_profile", "following_user_profile"]]
+
+    # the profile to be followed
+    user_profile = models.ForeignKey(
+        UserProfile, related_name="followers", on_delete=models.CASCADE
     )
 
-    following_user_id = models.ForeignKey(
-        UserProfile, related_name="followers", on_delete=models.CASCADE
+    # the profile making the follow
+    following_user_profile = models.ForeignKey(
+        UserProfile, related_name="following", on_delete=models.CASCADE
     )
 
     # You can even add info about when user started following

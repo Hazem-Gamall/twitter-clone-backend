@@ -15,9 +15,22 @@ likes_router.register(r"likes", views.UserPostsLikesViewSet, basename="user-like
 repost_router = NestedSimpleRouter(router, r"users", lookup="repost")
 repost_router.register(r"repost", views.UserPostsRepostsViewSet, basename="user-repost")
 
+followers_router = NestedSimpleRouter(router, r"users", lookup="followers")
+followers_router.register(
+    r"followers", views.UserFollowersViewSet, basename="user-followers"
+)
+
+following_router = NestedSimpleRouter(router, r"users", lookup="following")
+following_router.register(
+    r"following", views.UserFollowingViewSet, basename="user-following"
+)
+
+
 urlpatterns = [
     path(r"", include(router.urls)),
     path(r"", include(posts_router.urls)),
     path(r"", include(likes_router.urls)),
     path(r"", include(repost_router.urls)),
+    path(r"", include(followers_router.urls)),
+    path(r"", include(following_router.urls)),
 ]
