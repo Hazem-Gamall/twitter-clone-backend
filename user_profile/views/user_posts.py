@@ -7,7 +7,7 @@ from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework import status
 
 
-class UserPostsViewSet(viewsets.ViewSet):
+class UserPostsViewSet(viewsets.GenericViewSet):
     permission_classes = [IsOwner]
     queryset = UserProfile.objects.all()
     parser_classes = [FormParser, MultiPartParser, JSONParser]
@@ -30,8 +30,9 @@ class UserPostsViewSet(viewsets.ViewSet):
                 .posts.filter(reply_to__isnull=True)
                 .order_by("-creation")
             )
+        posts = self.paginate_queryset(posts)
         serialized_posts = PostSerializer(
-            posts, many=True, context={"user": request.user}
+            posts, many=True, context={"user": request.user, "request": request}
         ).data
         return Response(serialized_posts)
 

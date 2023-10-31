@@ -111,11 +111,16 @@ class PostSerializer(ReadOnlyOrUnkownFieldErrorMixin, serializers.ModelSerialize
         return obj.likes.count()
 
     def get_post_user(self, obj):
+        avatar = (
+            self.context["request"].build_absolute_uri(obj.user.avatar.url)
+            if obj.user.avatar
+            else None
+        )
         return {
             "id": obj.id,
             "name": obj.user.user.first_name,
             "username": obj.user.user.username,
-            "avatar": obj.user.avatar.url if obj.user.avatar else None,
+            "avatar": avatar,
         }
 
     def get_liked_by_user(self, obj: Post):
