@@ -12,7 +12,7 @@ from django.db import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
 
 
-class UserFollowingViewSet(viewsets.ViewSet):
+class UserFollowingViewSet(viewsets.GenericViewSet):
     queryset = UserProfile.objects.all()
     permission_classes = [IsOwner]
 
@@ -20,9 +20,8 @@ class UserFollowingViewSet(viewsets.ViewSet):
         username = following_user__username
         try:
             resource_user = self.queryset.get(user__username=username)
-            return Response(
-                UserFollowingSerializer(resource_user.following.all(), many=True).data
-            )
+            following = self.paginate_queryset(resource_user.following.all())
+            return Response(UserFollowingSerializer(following, many=True).data)
         except ObjectDoesNotExist:
             raise exceptions.ValidationError(
                 {"username": "The username provided did not match any know users."}

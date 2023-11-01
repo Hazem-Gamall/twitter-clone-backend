@@ -7,14 +7,17 @@ from rest_framework import status
 from user_profile.models import UserProfile
 
 
-class UserFollowersViewSet(viewsets.ViewSet):
+class UserFollowersViewSet(viewsets.GenericViewSet):
     queryset = UserProfile.objects.all()
 
     def list(self, request, followers_user__username):
         username = followers_user__username
+        followers = self.paginate_queryset(
+            self.queryset.get(user__username=username).followers.all()
+        )
         return Response(
             UserFollowersSerializer(
-                self.queryset.get(user__username=username).followers.all(),
+                followers,
                 many=True,
             ).data
         )
