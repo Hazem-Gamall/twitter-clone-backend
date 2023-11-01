@@ -124,15 +124,10 @@ class PostSerializer(ReadOnlyOrUnkownFieldErrorMixin, serializers.ModelSerialize
         }
 
     def get_liked_by_user(self, obj: Post):
-        if hasattr(self, "context") and "user" in self.context:
-            return obj.likes.filter(user=self.context["user"]).exists()
-
-        return False
+        return obj.likes.filter(user=self.context["request"].user).exists()
 
     def get_reposted_by_user(self, obj: Post):
-        if hasattr(self, "context") and "user" in self.context:
-            return self.context["user"].profile.posts.filter(embed=obj).exists()
-        return False
+        return self.context["request"].user.profile.posts.filter(embed=obj).exists()
 
     def get_repost_count(self, obj: Post):
         return obj.reposts.count()

@@ -7,14 +7,18 @@ from rest_framework import status
 from posts.models import Post
 
 
-class UserPostsLikesViewSet(viewsets.ViewSet):
+class UserPostsLikesViewSet(viewsets.GenericViewSet):
     permission_classes = [IsOwner]
     queryset = UserProfile.objects.all()
+    serializer_class = PostSerializer
 
     def list(self, request, likes_user__username):
         username = likes_user__username
         liked_posts = self.queryset.get(user__username=username).liked_posts.all()
-        serialized_liked_posts = PostSerializer(liked_posts, many=True).data
+        serialized_liked_posts = self.get_serializer(
+            liked_posts,
+            many=True,
+        ).data
         return Response(serialized_liked_posts)
 
     def create(self, request, likes_user__username):
@@ -38,5 +42,8 @@ class UserPostsLikesViewSet(viewsets.ViewSet):
         else:
             if post in self.queryset.get(user__username=username).liked_posts.all():
                 self.queryset.get(user__username=username).liked_posts.remove(post)
-
-        return Response(PostSerializer(post, context={"user": request.user}).data)
+        return Response(
+            self.get_serializer(
+                post,
+            ).data
+        )

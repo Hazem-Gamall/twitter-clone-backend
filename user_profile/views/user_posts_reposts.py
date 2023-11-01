@@ -8,16 +8,17 @@ from posts.models import Post
 
 
 # TODO: generify
-class UserPostsRepostsViewSet(viewsets.ViewSet):
+class UserPostsRepostsViewSet(viewsets.GenericViewSet):
     permission_classes = [IsOwner]
     queryset = UserProfile.objects.all()
+    serializer_class = PostSerializer
 
     def list(self, request, repost_user__username):
         username = repost_user__username
         respoted_posts = self.queryset.get(user__username=username).posts.filter(
             repost=True
         )
-        serialized_reposted_posts = PostSerializer(respoted_posts, many=True).data
+        serialized_reposted_posts = self.get_serializer(respoted_posts, many=True).data
         return Response(serialized_reposted_posts)
 
     def create(self, request, repost_user__username):
@@ -45,7 +46,9 @@ class UserPostsRepostsViewSet(viewsets.ViewSet):
                 embed=incoming_post,
             )
             return Response(
-                PostSerializer(repost_post, context={"user": request.user}).data
+                self.get_serializer(
+                    repost_post,
+                ).data
             )
         else:
             self.queryset.get(user__username=username).posts.filter(

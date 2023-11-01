@@ -11,6 +11,7 @@ class UserPostsViewSet(viewsets.GenericViewSet):
     permission_classes = [IsOwner]
     queryset = UserProfile.objects.all()
     parser_classes = [FormParser, MultiPartParser, JSONParser]
+    serializer_class = PostSerializer
 
     def list(self, request, posts_user__username):
         username = posts_user__username
@@ -31,13 +32,14 @@ class UserPostsViewSet(viewsets.GenericViewSet):
                 .order_by("-creation")
             )
         posts = self.paginate_queryset(posts)
-        serialized_posts = PostSerializer(
-            posts, many=True, context={"user": request.user, "request": request}
+        serialized_posts = self.get_serializer(
+            posts,
+            many=True,
         ).data
         return Response(serialized_posts)
 
     def create(self, request, posts_user__username):
-        request_data = request.data.dict()
+        request_data = request.data
 
         print(request_data)
 
@@ -69,4 +71,4 @@ class UserPostsViewSet(viewsets.GenericViewSet):
                 return Response(
                     deserialized_media.errors, status=status.HTTP_400_BAD_REQUEST
                 )
-        return Response(PostSerializer(saved_post).data)
+        return Response(self.get_serializer(saved_post).data)
