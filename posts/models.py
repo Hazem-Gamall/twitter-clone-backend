@@ -12,7 +12,7 @@ class Post(models.Model, UpdatableModelMixin):
     text = models.CharField(max_length=280)
     repost = models.BooleanField(default=False)
     embed = models.ForeignKey(
-        "self", models.SET_NULL, null=True, blank=True, related_name="reposts"
+        "self", models.CASCADE, null=True, blank=True, related_name="reposts"
     )
     reply_to = models.ForeignKey(
         "self", blank=True, on_delete=models.SET_NULL, null=True, related_name="replies"
