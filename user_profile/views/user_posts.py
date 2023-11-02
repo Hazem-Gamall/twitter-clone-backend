@@ -1,10 +1,14 @@
 from rest_framework.response import Response
+from rest_framework.decorators import action
 from rest_framework import viewsets
 from user_profile.models import UserProfile
 from user_profile.permissions import IsOwner
 from posts.serializers import PostSerializer, MediaSerialzer, CreatePostSerializer
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework import status
+from rest_framework.exceptions import ValidationError
+from django.core.exceptions import ObjectDoesNotExist
+from main.settings import DEBUG
 
 
 class UserPostsViewSet(viewsets.GenericViewSet):
@@ -72,3 +76,19 @@ class UserPostsViewSet(viewsets.GenericViewSet):
                     deserialized_media.errors, status=status.HTTP_400_BAD_REQUEST
                 )
         return Response(self.get_serializer(saved_post).data)
+
+    @action(methods=["GET"], detail=False, permission_classes=[IsOwner])
+    def timeline(self, request, posts_user__username):
+        username = posts_user__username
+        try:
+            resource_user = self.queryset.get(user__username=username)
+            if not DEBUG:
+                self.check_object_permissions(request, resource_user)
+            timeline_posts = []
+            for following in resource_user.following.all():
+                timeline_posts += list(following.user_profile.posts.all())
+            timeline_posts = self.paginate_queryset(timeline_posts)
+
+            return Response(self.get_serializer(timeline_posts, many=True).data)
+        except ObjectDoesNotExist:
+            raise ValidationError({"username": {"Does not match any known users."}})
