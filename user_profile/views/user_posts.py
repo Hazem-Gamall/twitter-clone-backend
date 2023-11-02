@@ -4,7 +4,8 @@ from rest_framework import viewsets
 from user_profile.models import UserProfile
 from user_profile.permissions import IsOwner
 from posts.serializers import PostSerializer, MediaSerialzer, CreatePostSerializer
-from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+from rest_framework.parsers import MultiPartParser, JSONParser
+from user_profile.parsers import DictFormParser, DictMultiPartParser
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from django.core.exceptions import ObjectDoesNotExist
@@ -14,7 +15,7 @@ from main.settings import DEBUG
 class UserPostsViewSet(viewsets.GenericViewSet):
     permission_classes = [IsOwner]
     queryset = UserProfile.objects.all()
-    parser_classes = [FormParser, MultiPartParser, JSONParser]
+    parser_classes = [DictFormParser, DictMultiPartParser, JSONParser]
     serializer_class = PostSerializer
 
     def list(self, request, posts_user__username):
@@ -63,7 +64,7 @@ class UserPostsViewSet(viewsets.GenericViewSet):
             saved_post = serialized_post.save()
             user_posts.add(saved_post)
         else:
-            return Response(serialized_post.errors, status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError(serialized_post.errors)
         if media_data:
             deserialized_media = MediaSerialzer(
                 data={"file": media_data, "post": saved_post.id}
@@ -87,6 +88,7 @@ class UserPostsViewSet(viewsets.GenericViewSet):
             timeline_posts = []
             for following in resource_user.following.all():
                 timeline_posts += list(following.user_profile.posts.all())
+            timeline_posts.sort(key=lambda post: post.creation, reverse=True)
             timeline_posts = self.paginate_queryset(timeline_posts)
 
             return Response(self.get_serializer(timeline_posts, many=True).data)
