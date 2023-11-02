@@ -30,7 +30,7 @@ SECRET_KEY = "django-insecure-j=$uo)s-6-sa2djh1(_bl9l^q5_bei%9bj$g*8c8egp$7snuzx
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
 CORS_ORIGIN_WHITELIST = ["http://localhost:5173", "http://127.0.0.1:5173"]
 # Application definition
@@ -145,7 +145,7 @@ REST_FRAMEWORK = {
     ],
     # Flexible yet not very performant when you have a lot of data
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
-    "PAGE_SIZE": 10,
+    "PAGE_SIZE": 5,
 }
 
 
