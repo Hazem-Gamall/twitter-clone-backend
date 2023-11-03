@@ -41,13 +41,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     def get_followed_by_user(self, obj: UserProfile):
         if "request" in self.context:
-            print(self.context["request"].user)
-            print(
-                obj.followers.filter(
-                    user_profile=obj,
-                    following_user_profile=self.context["request"].user.profile,
-                ).exists()
-            )
             return obj.followers.filter(
                 user_profile=obj,
                 following_user_profile=self.context["request"].user.profile,
