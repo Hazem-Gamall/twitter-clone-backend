@@ -18,6 +18,14 @@ class PostViewSet(viewsets.ModelViewSet):
             return UpdatePostSerializer
         return PostSerializer
 
+    @action(methods=["GET"], detail=False)
+    def search(self, request):
+        query = request.query_params.get("q")
+        posts = self.paginate_queryset(
+            self.queryset.filter(text__icontains=query).order_by("-creation")
+        )
+        return response.Response(self.get_serializer(posts, many=True).data)
+
 
 class PostRepliesViewSet(viewsets.ViewSet):
     queryset = Post.objects.all()
