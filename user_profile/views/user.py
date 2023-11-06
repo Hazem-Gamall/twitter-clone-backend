@@ -6,6 +6,7 @@ from user_profile.permissions import IsAuthenticatedOrCreateOrOptions
 from user_profile.serializers import UserProfileSerializer
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -18,6 +19,8 @@ class UserViewSet(viewsets.ModelViewSet):
     @action(methods=["GET"], detail=False)
     def search(self, request):
         query = request.query_params.get("q")
+        if not query:
+            raise ValidationError({"q": "can't be empty"})
 
         users = self.queryset.filter(
             Q(user__username__icontains=query) | Q(user__first_name__icontains=query)
