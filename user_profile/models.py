@@ -33,6 +33,18 @@ class UserProfile(ModelWithUser):
         return self.user.username
 
 
+class Mention(models.Model):
+    user_profile = models.ForeignKey(
+        UserProfile, related_name="user_mentions", on_delete=models.CASCADE
+    )
+    post = models.ForeignKey(
+        "posts.Post", related_name="post_mentions", on_delete=models.CASCADE
+    )
+    created = models.DateTimeField(auto_now_add=True)
+    start_index = models.IntegerField()
+    end_index = models.IntegerField()
+
+
 class UserFollowing(models.Model):
     class Meta:
         unique_together = [["user_profile", "following_user_profile"]]

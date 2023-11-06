@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework import viewsets
-from user_profile.models import UserProfile
+from user_profile.models import UserProfile, Mention
 from user_profile.permissions import IsOwner
 from posts.serializers import PostSerializer, MediaSerialzer, CreatePostSerializer
 from rest_framework.parsers import MultiPartParser, JSONParser
@@ -10,6 +10,7 @@ from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from django.core.exceptions import ObjectDoesNotExist
 from main.settings import DEBUG
+import regex
 
 
 class UserPostsViewSet(viewsets.GenericViewSet):
@@ -45,11 +46,12 @@ class UserPostsViewSet(viewsets.GenericViewSet):
 
     def create(self, request, posts_user__username):
         request_data = request.data
-
+        mention_pattern = r"(?<=\s|^)@\w{1,35}(?=\s|$)"
         print(request_data)
 
         username = posts_user__username
-        user_posts = self.queryset.get(user__username=username).posts
+        resource_user = self.queryset.get(user__username=username)
+        user_posts = resource_user.posts
         media_data = None
         print("media" in request_data)
         if "reply_to" in request_data:
@@ -63,6 +65,18 @@ class UserPostsViewSet(viewsets.GenericViewSet):
         if serialized_post.is_valid():
             saved_post = serialized_post.save()
             user_posts.add(saved_post)
+            for match in regex.finditer(mention_pattern, post_data["text"]):
+                mentioned_user = self.queryset.filter(user__username=match.group()[1:])
+
+                if not mentioned_user.exists():
+                    continue
+                new_mention = Mention(
+                    user_profile=resource_user,
+                    post=saved_post,
+                    start_index=match.start(),
+                    end_index=match.end(),
+                )
+                new_mention.save()
         else:
             raise ValidationError(serialized_post.errors)
         if media_data:

@@ -1,8 +1,14 @@
 from rest_framework import serializers, response
-from .models import UserProfile, UserFollowing
+from .models import UserProfile, UserFollowing, Mention
 from django.contrib.auth.models import User
 from rest_framework.exceptions import ValidationError
 from main.serializer_validation_mixins import ReadOnlyOrUnkownFieldErrorMixin
+
+
+class MentionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Mention
+        fields = ["user_profile", "post", "start_index", "end_index"]
 
 
 class UserSerializer(serializers.ModelSerializer):

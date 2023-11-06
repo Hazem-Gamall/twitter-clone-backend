@@ -5,6 +5,7 @@ from rest_framework import serializers
 from main.serializer_validation_mixins import ReadOnlyOrUnkownFieldErrorMixin
 from .models import Media, Post
 from user_profile.models import UserProfile
+from user_profile.serializers import MentionSerializer
 
 
 class MediaSerialzer(serializers.ModelSerializer):
@@ -89,6 +90,7 @@ class PostSerializer(ReadOnlyOrUnkownFieldErrorMixin, serializers.ModelSerialize
     likes_count = serializers.SerializerMethodField("get_likes_count")
     liked_by_user = serializers.SerializerMethodField("get_liked_by_user")
     reposted_by_user = serializers.SerializerMethodField("get_reposted_by_user")
+    post_mentions = MentionSerializer(many=True)
 
     class Meta:
         model = Post
