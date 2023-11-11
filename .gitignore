@@ -86,7 +86,10 @@ __pycache__/
 local_settings.py
 media/
 .env
+*.env
 db.sqlite3
 
 ### vscode ###
 .vscode/
+
+.dockerignore
