@@ -4,7 +4,9 @@ RUN python -m ensurepip
 RUN mkdir /project
 WORKDIR /project
 COPY . .
-RUN  python -m pip install -r requirements.txt && python -m pip install tzdata
+RUN  apk add --virtual build-deps gcc python3-dev musl-dev jpeg-dev zlib-dev && \
+python -m pip install -r requirements.txt && python -m pip install tzdata && \
+apk del build-deps
 EXPOSE 80
 
 ENV DEBUG=false
