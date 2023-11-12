@@ -8,10 +8,11 @@ RUN  python -m pip install -r requirements.txt && python -m pip install tzdata
 EXPOSE 80
 
 ENV DEBUG=false
-ENV ALLOWED_HOSTS=django-api,localhost
+ENV ALLOWED_HOSTS=twitter-clone-api,localhost
 ENV SECRET_KEY==r*2jzwrl=iyyhlvvb0!uzp-+67@#x57tsm8)6i-5xz81#!vfk
-ENV CORS_ORIGIN_WHITELIST=http://localhost,http://django-api
-ENV CSRF_TRUSTED_ORIGINS=http://django-api,http://localhost:8000
+ENV CORS_ORIGIN_WHITELIST=http://localhost,http://twitter-clone-api
+ENV CSRF_TRUSTED_ORIGINS=http://twitter-clone-api,http://localhost:8000
+
 RUN python manage.py collectstatic
 RUN mv static /static
 COPY nginx.conf /etc/nginx/conf.d/default.conf
