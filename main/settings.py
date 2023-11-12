@@ -19,7 +19,7 @@ from environs import Env
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-MEDIA_URL = "/media/"
+MEDIA_URL = "media/"
 
 
 # Quick-start development settings - unsuitable for production
@@ -150,6 +150,7 @@ REST_FRAMEWORK = {
     # Flexible yet not very performant when you have a lot of data
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 5,
+    "UPLOADED_FILES_USE_URL": False,
 }
 
 

@@ -3,6 +3,7 @@ from .models import UserProfile, UserFollowing, Mention
 from django.contrib.auth.models import User
 from rest_framework.exceptions import ValidationError
 from main.serializer_validation_mixins import ReadOnlyOrUnkownFieldErrorMixin
+from main import settings
 
 
 class MentionSerializer(serializers.ModelSerializer):
@@ -25,7 +26,6 @@ class UserSerializer(serializers.ModelSerializer):
 
 class UserProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer()
-
     followed_by_user = serializers.SerializerMethodField("get_followed_by_user")
 
     class Meta:
@@ -72,6 +72,12 @@ class UserProfileSerializer(serializers.ModelSerializer):
                 updated_user.save()
 
         return super().update(instance, validated_data)
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data["avatar"] = f"{settings.MEDIA_URL}/{data.get('avatar')}"
+        data["cover_picture"] = f"{settings.MEDIA_URL}/{data.get('cover_picture')}"
+        return data
 
 
 class UserFollowingSerializer(serializers.ModelSerializer):

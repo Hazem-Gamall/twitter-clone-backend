@@ -3,7 +3,7 @@ from rest_framework.decorators import action
 from rest_framework import viewsets
 from user_profile.models import UserProfile, Mention
 from user_profile.permissions import IsOwner
-from posts.serializers import PostSerializer, MediaSerialzer, CreatePostSerializer
+from posts.serializers import PostSerializer, MediaSerializer, CreatePostSerializer
 from rest_framework.parsers import MultiPartParser, JSONParser
 from user_profile.parsers import DictFormParser, DictMultiPartParser
 from rest_framework import status
@@ -80,7 +80,7 @@ class UserPostsViewSet(viewsets.GenericViewSet):
         else:
             raise ValidationError(serialized_post.errors)
         if media_data:
-            deserialized_media = MediaSerialzer(
+            deserialized_media = MediaSerializer(
                 data={"file": media_data, "post": saved_post.id}
             )
             if deserialized_media.is_valid():
@@ -97,8 +97,8 @@ class UserPostsViewSet(viewsets.GenericViewSet):
         username = posts_user__username
         try:
             resource_user = self.queryset.get(user__username=username)
-            if not DEBUG:
-                self.check_object_permissions(request, resource_user)
+
+            self.check_object_permissions(request, resource_user)
             timeline_posts = []
             for following in resource_user.following.all():
                 timeline_posts += list(following.user_profile.posts.all())
@@ -108,3 +108,5 @@ class UserPostsViewSet(viewsets.GenericViewSet):
             return Response(self.get_serializer(timeline_posts, many=True).data)
         except ObjectDoesNotExist:
             raise ValidationError({"username": {"Does not match any known users."}})
+        except Exception as e:
+            raise ValidationError(e)

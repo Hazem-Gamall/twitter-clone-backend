@@ -5,13 +5,19 @@ from rest_framework import serializers
 from main.serializer_validation_mixins import ReadOnlyOrUnkownFieldErrorMixin
 from .models import Media, Post
 from user_profile.models import UserProfile
-from user_profile.serializers import MentionSerializer
+from user_profile.serializers import MentionSerializer, UserProfileSerializer
+from main import settings
 
 
-class MediaSerialzer(serializers.ModelSerializer):
+class MediaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Media
         fields = "__all__"
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data["file"] = f"{settings.MEDIA_URL}/{data.get('file')}"
+        return data
 
 
 class UpdatePostSerializer(
@@ -33,7 +39,7 @@ class UpdatePostSerializer(
 class CreatePostSerializer(
     ReadOnlyOrUnkownFieldErrorMixin, serializers.ModelSerializer
 ):
-    media = MediaSerialzer(many=True, allow_null=True, required=False)
+    media = MediaSerializer(many=True, allow_null=True, required=False)
     username = serializers.CharField(
         max_length=35, source="user__user__username", required=False
     )
@@ -79,8 +85,22 @@ class CreatePostSerializer(
         return post
 
 
+class PostUserSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(source="user.first_name")
+    username = serializers.CharField(source="user.username")
+
+    class Meta:
+        model = UserProfile
+        fields = ["id", "name", "username", "avatar"]
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data["avatar"] = f"{settings.MEDIA_URL}/{data.get('avatar')}"
+        return data
+
+
 class PostSerializer(ReadOnlyOrUnkownFieldErrorMixin, serializers.ModelSerializer):
-    media = MediaSerialzer(many=True, allow_null=True, required=False)
+    media = MediaSerializer(many=True, allow_null=True, required=False)
     post_user = serializers.SerializerMethodField("get_post_user")
     username = serializers.CharField(
         max_length=35, source="user__user__username", required=False
@@ -113,17 +133,7 @@ class PostSerializer(ReadOnlyOrUnkownFieldErrorMixin, serializers.ModelSerialize
         return obj.likes.count()
 
     def get_post_user(self, obj):
-        avatar = (
-            self.context["request"].build_absolute_uri(obj.user.avatar.url)
-            if obj.user.avatar
-            else None
-        )
-        return {
-            "id": obj.id,
-            "name": obj.user.user.first_name,
-            "username": obj.user.user.username,
-            "avatar": avatar,
-        }
+        return PostUserSerializer(instance=obj.user).data
 
     def get_liked_by_user(self, obj: Post):
         return obj.likes.filter(user=self.context["request"].user).exists()

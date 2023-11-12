@@ -28,7 +28,7 @@ def restrict_media(post_id):
 
 
 class Media(models.Model):
-    file = models.FileField()
+    file = models.ImageField()
     post = models.ForeignKey(
         Post,
         related_name="media",
