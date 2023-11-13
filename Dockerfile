@@ -12,10 +12,11 @@ EXPOSE 80
 ENV DEBUG=false
 ENV ALLOWED_HOSTS=twitter-clone-api,localhost
 ENV SECRET_KEY==r*2jzwrl=iyyhlvvb0!uzp-+67@#x57tsm8)6i-5xz81#!vfk
-ENV CORS_ORIGIN_WHITELIST=http://localhost,http://twitter-clone-api
+ENV CORS_ORIGIN_WHITELIST=http://localhost,http://twitter-clone-frontend
 ENV CSRF_TRUSTED_ORIGINS=http://twitter-clone-api,http://localhost:8000
 
 RUN python manage.py collectstatic
 RUN mv static /static
+RUN python manage.py makemigrations && python manage.py migrate
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-CMD  nginx && gunicorn --access-logfile - --bind 0.0.0.0:8000 main.wsgi && nginx -s start
+CMD nginx &&  gunicorn --access-logfile ./gunicorn.log --bind 0.0.0.0:8000 main.wsgi
