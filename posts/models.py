@@ -1,11 +1,12 @@
 from django.db import models
+from main.abstract_models import ModelWithUser
 from user_profile.models import UserProfile
 from main.model_mixins import UpdatableModelMixin
 
 # Create your models here.
 
 
-class Post(models.Model, UpdatableModelMixin):
+class Post(ModelWithUser, UpdatableModelMixin):
     user = models.ForeignKey(UserProfile, models.CASCADE, related_name="posts")
     creation = models.DateTimeField(auto_now_add=True)
     last_edit = models.DateTimeField(auto_now=True)
@@ -17,6 +18,9 @@ class Post(models.Model, UpdatableModelMixin):
     reply_to = models.ForeignKey(
         "self", blank=True, on_delete=models.SET_NULL, null=True, related_name="replies"
     )
+
+    def get_user(self):
+        return self.user.user
 
 
 from django.core.exceptions import ValidationError
