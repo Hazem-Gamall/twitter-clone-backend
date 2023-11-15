@@ -25,6 +25,8 @@ following_router.register(
     r"following", views.UserFollowingViewSet, basename="user-following"
 )
 
+chats_router = NestedSimpleRouter(router, r"users", lookup="chats")
+chats_router.register(r"chats", views.UserChatsViewSet, basename="user-chats")
 
 urlpatterns = [
     path(r"", include(router.urls)),
@@ -33,4 +35,5 @@ urlpatterns = [
     path(r"", include(repost_router.urls)),
     path(r"", include(followers_router.urls)),
     path(r"", include(following_router.urls)),
+    path(r"", include(chats_router.urls)),
 ]

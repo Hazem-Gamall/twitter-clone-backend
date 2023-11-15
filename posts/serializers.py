@@ -16,7 +16,7 @@ class MediaSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        data["file"] = f"{settings.MEDIA_URL}/{data.get('file')}"
+        data["file"] = f"{settings.MEDIA_URL}{data.get('file')}"
         return data
 
 
@@ -95,7 +95,7 @@ class PostUserSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        data["avatar"] = f"{settings.MEDIA_URL}/{data.get('avatar')}"
+        data["avatar"] = f"{settings.MEDIA_URL}{data.get('avatar')}"
         return data
 
 

@@ -39,6 +39,9 @@ CORS_ORIGIN_WHITELIST = env.list("CORS_ORIGIN_WHITELIST")
 
 
 INSTALLED_APPS = [
+    "daphne",
+    "channels",
+    "chat",
     "user_auth",
     "posts",
     "user_profile.apps.UserProfileConfig",
@@ -81,8 +84,21 @@ TEMPLATES = [
     },
 ]
 
+ASGI_APPLICATION = "main.asgi.application"
+
 WSGI_APPLICATION = "main.wsgi.application"
 
+
+# Channel layer
+# https://channels.readthedocs.io/en/latest/topics/channel_layers.html
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases

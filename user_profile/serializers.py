@@ -77,8 +77,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        data["avatar"] = f"{settings.MEDIA_URL}/{data.get('avatar')}"
-        data["cover_picture"] = f"{settings.MEDIA_URL}/{data.get('cover_picture')}"
+        data["avatar"] = f"{settings.MEDIA_URL}{data.get('avatar')}"
+        data["cover_picture"] = f"{settings.MEDIA_URL}{data.get('cover_picture')}"
         return data
 
 
