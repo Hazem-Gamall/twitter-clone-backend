@@ -14,9 +14,7 @@ from django.conf import settings
 
 @database_sync_to_async
 def get_user(validated_token):
-    print("validated token", validated_token)
     try:
-        print("validated token user_id", validated_token["user_id"])
         user = get_user_model().objects.get(id=validated_token["user_id"])
         # return get_user_model().objects.get(id=toke_id)
         print(f"{user}")
@@ -47,7 +45,6 @@ class JwtAuthMiddleware(BaseMiddleware):
         else:
             #  Then token is valid, decode it
             decoded_data = jwt_decode(token, settings.SECRET_KEY, algorithms=["HS256"])
-            print(decoded_data)
             # Will return a dictionary like -
             # {
             #     "token_type": "access",

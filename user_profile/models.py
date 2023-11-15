@@ -26,6 +26,10 @@ class UserProfile(ModelWithUser):
     def following_count(self):
         return self.following.count()
 
+    @property
+    def chats(self):
+        return self.chat_set1.all() | self.chat_set2.all()
+
     def get_user(self):
         return self.user
 

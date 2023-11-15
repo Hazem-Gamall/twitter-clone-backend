@@ -5,9 +5,11 @@ from user_profile.models import UserProfile
 # Create your models here.
 class Chat(models.Model):
     first_user_profile = models.ForeignKey(
-        UserProfile, on_delete=models.CASCADE, related_name="chats"
+        UserProfile, on_delete=models.CASCADE, related_name="chat_set1"
     )
-    second_user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    second_user_profile = models.ForeignKey(
+        UserProfile, on_delete=models.CASCADE, related_name="chat_set2"
+    )
 
     creation = models.DateTimeField(auto_now_add=True)
     last_edit = models.DateTimeField(auto_now=True)
@@ -24,3 +26,6 @@ class Message(models.Model):
     chat = models.ForeignKey(Chat, related_name="messages", on_delete=models.CASCADE)
     creation = models.DateTimeField(auto_now_add=True)
     last_edit = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-creation"]

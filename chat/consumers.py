@@ -3,6 +3,7 @@ import json
 from .models import Chat, Message
 from asgiref.sync import async_to_sync
 from django.db.models import Q
+from .serializers import RetrieveMessageSerializer
 
 
 class ChatConsumer(WebsocketConsumer):
@@ -36,11 +37,15 @@ class ChatConsumer(WebsocketConsumer):
         )
         text_data_json = json.loads(text_data)
         message = text_data_json["message"]
-        Message.objects.create(
-            text=text_data, author=self.scope["user"], chat=self.chat_id
+        message_object = Message.objects.create(
+            text=message, author=self.scope["user"].profile, chat_id=self.chat_id
         )
         async_to_sync(self.channel_layer.group_send)(
-            self.chat_id, {"type": "receive_message", "message": message}
+            self.chat_id,
+            {
+                "type": "receive_message",
+                "message": RetrieveMessageSerializer(message_object).data,
+            },
         )
 
     # From group/chat
@@ -49,4 +54,4 @@ class ChatConsumer(WebsocketConsumer):
 
         print("sending back message to user")
         # Send back to the socket
-        self.send(text_data=json.dumps({"message": message}))
+        self.send(text_data=json.dumps(message))
