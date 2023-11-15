@@ -19,4 +19,4 @@ RUN python manage.py collectstatic
 RUN mv static /static
 RUN python manage.py makemigrations && python manage.py migrate
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-CMD nginx &&  gunicorn --access-logfile ./gunicorn.log --bind 0.0.0.0:8000 main.wsgi
+CMD nginx && gunicorn --access-logfile ./gunicorn.log --bind 0.0.0.0:8000  main.asgi:application -k uvicorn.workers.UvicornWorker
