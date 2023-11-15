@@ -14,6 +14,7 @@ ENV ALLOWED_HOSTS=twitter-clone-api,localhost
 ENV SECRET_KEY==r*2jzwrl=iyyhlvvb0!uzp-+67@#x57tsm8)6i-5xz81#!vfk
 ENV CORS_ORIGIN_WHITELIST=http://localhost,http://twitter-clone-frontend
 ENV CSRF_TRUSTED_ORIGINS=http://twitter-clone-api,http://localhost:8000
+ENV REDIS_HOST=redis://twitter-clone-redist:6379
 
 RUN python manage.py collectstatic
 RUN mv static /static
