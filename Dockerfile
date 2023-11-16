@@ -5,7 +5,7 @@ RUN mkdir /project
 RUN apk add cargo openssl-dev
 WORKDIR /project
 COPY . .
-RUN  apk add --virtual build-deps gcc g++ python3-dev libffi-dev musl-dev jpeg-dev zlib-dev && \
+RUN  apk add --virtual build-deps gcc g++ libuv-dev python3-dev libffi-dev musl-dev jpeg-dev zlib-dev && \
 python -m pip install -U setuptools pip && \
 python -m pip install -r requirements.txt && python -m pip install tzdata && \
 apk del build-deps
