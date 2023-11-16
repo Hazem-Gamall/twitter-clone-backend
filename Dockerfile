@@ -11,7 +11,7 @@ apk del build-deps
 EXPOSE 80
 
 ENV DEBUG=false
-ENV ALLOWED_HOSTS=twitter-clone-api,localhost
+ENV ALLOWED_HOSTS=twitter-clone-api,localhost,148.100.108.153
 ENV SECRET_KEY==r*2jzwrl=iyyhlvvb0!uzp-+67@#x57tsm8)6i-5xz81#!vfk
 ENV CORS_ORIGIN_WHITELIST=http://localhost,http://twitter-clone-frontend,http://148.100.108.153
 ENV CSRF_TRUSTED_ORIGINS=http://twitter-clone-api,http://localhost,http://148.100.108.153
