@@ -65,3 +65,21 @@ class UserFollowing(models.Model):
 
     # You can even add info about when user started following
     created = models.DateTimeField(auto_now_add=True)
+
+
+class Notification(models.Model):
+    class NotificationType(models.TextChoices):
+        REPLY = "R", "Reply"
+        REPOST = "T", "Repost"
+        LIKE = "L", "Like"
+        MENTION = "M", "Mention"
+
+    notification_type = models.CharField(
+        choices=NotificationType.choices, blank=False, null=False, max_length=1
+    )
+    issuer = models.ForeignKey(UserProfile, models.CASCADE)
+    reciever = models.ForeignKey(
+        UserProfile, models.CASCADE, related_name="notifications"
+    )
+    creation = models.DateTimeField(auto_now_add=True)
+    viewed = models.BooleanField(default=False)
