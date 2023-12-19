@@ -159,9 +159,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"
     ],
-    "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework_simplejwt.authentication.JWTAuthentication"
-    ],
+    "DEFAULT_AUTHENTICATION_CLASSES": ["user_auth.authenticate.CustomAuthentication"],
     # Flexible yet not very performant when you have a lot of data
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 5,
@@ -170,6 +168,10 @@ REST_FRAMEWORK = {
 
 
 SIMPLE_JWT = {
+    "AUTH_COOKIE": "access_token",
+    "AUTH_COOKIE_SECURE": False,
+    "AUTH_COOKIE_HTTP_ONLY": True,
+    "AUTH_COOKIE_SAMESITE": "Lax",
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=20),
     "TOKEN_OBTAIN_SERIALIZER": "user_auth.serializers.TokenObtainPairSerializerWithUsername",
 }
