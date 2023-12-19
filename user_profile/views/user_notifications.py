@@ -3,7 +3,7 @@ from rest_framework import viewsets, exceptions
 from user_profile.models import UserProfile
 from main.permissions import IsOwner
 from rest_framework.decorators import action
-from notifications.serializers import NotificationsSerializer
+from notifications.serializers import NotificationSerializer
 from user_profile.models import UserProfile
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -11,7 +11,7 @@ from django.core.exceptions import ObjectDoesNotExist
 class UserNotificationsViewSet(viewsets.GenericViewSet):
     queryset = UserProfile.objects.all()
     permission_classes = [IsOwner]
-    serializer_class = NotificationsSerializer
+    serializer_class = NotificationSerializer
 
     def list(self, request, notifications_user__username):
         username = notifications_user__username

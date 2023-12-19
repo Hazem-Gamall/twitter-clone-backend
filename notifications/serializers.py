@@ -4,7 +4,7 @@ from user_profile.serializers import UserProfileSerializer
 from .models import Notification
 
 
-class NotificationsSerializer(serializers.ModelSerializer):
+class NotificationSerializer(serializers.ModelSerializer):
     post = PostSerializer()
     issuer = UserProfileSerializer()
     receiver = UserProfileSerializer()

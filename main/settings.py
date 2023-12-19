@@ -89,6 +89,9 @@ ASGI_APPLICATION = "main.asgi.application"
 
 WSGI_APPLICATION = "main.wsgi.application"
 
+REDIS_URL = env.str("REDIS_URL")
+PUSH_NOTIFICATIONS_CHANNEL = "test"
+PUSH_NOTIFICATIONS_DELAY_SECONDS = 5
 
 # Channel layer
 # https://channels.readthedocs.io/en/latest/topics/channel_layers.html
@@ -96,7 +99,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [env.str("REDIS_HOST")],
+            "hosts": [REDIS_URL],
         },
     },
 }
