@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "daphne",
     "channels",
     "chat",
+    "notifications",
     "user_auth",
     "posts",
     "user_profile.apps.UserProfileConfig",

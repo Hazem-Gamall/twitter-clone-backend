@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 from rest_framework import viewsets, exceptions
 from user_profile.models import UserProfile
-from user_profile.permissions import IsOwner
+from main.permissions import IsOwner
 from posts.serializers import PostSerializer
 from rest_framework import status
 from posts.models import Post

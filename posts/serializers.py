@@ -1,11 +1,9 @@
 from rest_framework.exceptions import ValidationError
-from rest_framework.response import Response
-from rest_framework import status
 from rest_framework import serializers
 from main.serializer_validation_mixins import ReadOnlyOrUnkownFieldErrorMixin
 from .models import Media, Post
 from user_profile.models import UserProfile
-from user_profile.serializers import MentionSerializer, UserProfileSerializer
+from user_profile.serializers import MentionSerializer
 from main import settings
 
 
