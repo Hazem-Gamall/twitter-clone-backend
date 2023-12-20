@@ -3,6 +3,6 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path("token/", TokenObtainPairView.as_view()),
-    path("token/refresh/", TokenRefreshView.as_view()),
+    path("token/", views.HTTPOnlyTokenObtainPairView.as_view()),
+    path("token/refresh/", views.CookieTokenRefreshView.as_view()),
 ]

@@ -16,6 +16,7 @@ async def listen_to_channel(filter_func: Callable, user_id: int) -> AsyncGenerat
                 timeout=settings.PUSH_NOTIFICATIONS_DELAY_SECONDS,
                 ignore_subscribe_messages=True,
             )
+            print("message here", message)
             # Send on connect message
             if message is None and is_on_connect:
                 yield ""
@@ -27,7 +28,6 @@ async def listen_to_channel(filter_func: Callable, user_id: int) -> AsyncGenerat
                 # yield f"data: {json.dumps(message, default=str)}\n\n"
                 yield ""
                 continue
-            print("message", message)
             message = json.loads(message["data"])
             # Check if the authorized user is a recipient of the notification
             if filter_func(user_id, message):

@@ -6,5 +6,7 @@ from .redis_client import send_notification
 
 @receiver(post_save, sender="notifications.Notification")
 def notification_handler(sender, **kwargs):
+    if not kwargs["created"]:
+        return
     notification = kwargs.pop("instance")
     send_notification(NotificationSerializer(notification).data)

@@ -33,7 +33,6 @@ class NotificationSSEAPIView(APIView):
     queryset = Notification.objects.all()
     permission_classes = [IsOwner]
     renderer_classes = [ServerSentEventRenderer]
-    authentication_classes = []
 
     def get(self, request):
         generator = listen_to_channel(
