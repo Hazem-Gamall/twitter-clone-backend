@@ -170,10 +170,12 @@ REST_FRAMEWORK = {
 
 
 SIMPLE_JWT = {
+    "REFRESH_COOKIE": "refresh_token",
     "AUTH_COOKIE": "access_token",
     "AUTH_COOKIE_SECURE": True,
     "AUTH_COOKIE_HTTP_ONLY": True,
     "AUTH_COOKIE_SAMESITE": "none",
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=20),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=10),
     "TOKEN_OBTAIN_SERIALIZER": "user_auth.serializers.TokenObtainPairSerializerWithUsername",
 }
