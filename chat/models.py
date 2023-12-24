@@ -17,6 +17,10 @@ class Chat(models.Model):
     class Meta:
         unique_together = [["first_user_profile", "second_user_profile"]]
 
+    @property
+    def last_message(self):
+        return self.messages.all().first()
+
 
 class Message(models.Model):
     text = models.TextField()

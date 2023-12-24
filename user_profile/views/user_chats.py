@@ -12,7 +12,7 @@ from rest_framework import status
 from rest_framework.decorators import action
 from user_profile.models import UserProfile
 from django.db import IntegrityError
-from django.db.models import Q
+from django.db.models import Q, Min, Max
 from django.core.exceptions import ObjectDoesNotExist
 
 
@@ -33,7 +33,14 @@ class UserChatsViewSet(viewsets.GenericViewSet):
         try:
             resource_user = self.queryset.get(user__username=username)
             print("chat res user", resource_user)
-            chats = self.paginate_queryset(resource_user.chats)
+
+            chats = self.paginate_queryset(
+                resource_user.chats.annotate(
+                    last_message_edit=Max("messages__last_edit")
+                )
+                .order_by("-last_message_edit")
+                .exclude(last_message_edit__isnull=True)
+            )
             return Response(self.get_serializer(chats, many=True).data)
         except ObjectDoesNotExist:
             raise exceptions.ValidationError(
@@ -49,7 +56,19 @@ class UserChatsViewSet(viewsets.GenericViewSet):
         username_to_chat_with = request.data["username"]
         try:
             user_to_chat_with = self.queryset.get(user__username=username_to_chat_with)
-            print("old chatss", Chat.objects.filter())
+            existing_chat = Chat.objects.filter(
+                Q(
+                    first_user_profile=user_to_chat_with,
+                    second_user_profile=resource_user,
+                )
+                | Q(
+                    first_user_profile=resource_user,
+                    second_user_profile=user_to_chat_with,
+                )
+            )
+            print("existing chat", existing_chat)
+            if existing_chat.exists():
+                return Response(self.get_serializer(existing_chat[0]).data)
             deserialized_chat = self.get_serializer(
                 data={
                     "first_user_profile": resource_user.id,
