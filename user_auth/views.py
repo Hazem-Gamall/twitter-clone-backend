@@ -68,15 +68,15 @@ class HTTPOnlyTokenObtainPairView(APIView):
 
 class CookieTokenRefreshView(TokenRefreshView):
     def finalize_response(self, request, response, *args, **kwargs):
-        if response.data.get("refresh"):
-            cookie_max_age = 3600 * 24 * 14  # 14 days
-            response.set_cookie(
-                "refresh_token",
-                response.data["refresh"],
-                max_age=cookie_max_age,
-                httponly=True,
-            )
-            del response.data["refresh"]
+        response.set_cookie(
+            key=settings.SIMPLE_JWT["AUTH_COOKIE"],
+            value=response.data["access"],
+            expires=settings.SIMPLE_JWT["ACCESS_TOKEN_LIFETIME"],
+            secure=settings.SIMPLE_JWT["AUTH_COOKIE_SECURE"],
+            httponly=settings.SIMPLE_JWT["AUTH_COOKIE_HTTP_ONLY"],
+            samesite=settings.SIMPLE_JWT["AUTH_COOKIE_SAMESITE"],
+        )
+
         return super().finalize_response(request, response, *args, **kwargs)
 
     serializer_class = CookieTokenRefreshSerializer
