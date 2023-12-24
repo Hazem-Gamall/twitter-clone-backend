@@ -2,7 +2,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework import viewsets
 from user_profile.models import UserProfile, Mention
-from user_profile.permissions import IsOwner
+from main.permissions import IsOwner
 from posts.serializers import PostSerializer, MediaSerializer, CreatePostSerializer
 from rest_framework.parsers import MultiPartParser, JSONParser
 from user_profile.parsers import DictFormParser, DictMultiPartParser
@@ -71,7 +71,7 @@ class UserPostsViewSet(viewsets.GenericViewSet):
                 if not mentioned_user.exists():
                     continue
                 new_mention = Mention(
-                    user_profile=resource_user,
+                    user_profile=mentioned_user[0],
                     post=saved_post,
                     start_index=match.start(),
                     end_index=match.end(),

@@ -30,6 +30,10 @@ class UserProfile(ModelWithUser):
     def chats(self):
         return self.chat_set1.all() | self.chat_set2.all()
 
+    @property
+    def name(self):
+        return self.user.first_name
+
     def get_user(self):
         return self.user
 

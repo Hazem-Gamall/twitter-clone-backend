@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 from rest_framework import viewsets, exceptions
 from chat.models import Chat, Message
-from user_profile.permissions import IsOwner
+from main.permissions import IsOwner
 from chat.serializers import (
     CreateChatSerializer,
     RetrieveChatSerializer,

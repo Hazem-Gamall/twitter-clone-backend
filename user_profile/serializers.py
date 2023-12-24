@@ -21,7 +21,7 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             "password": {"write_only": True},
         }
-        fields = ["username", "email", "password", "name", "date_joined"]
+        fields = ["id", "username", "email", "password", "name", "date_joined"]
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
