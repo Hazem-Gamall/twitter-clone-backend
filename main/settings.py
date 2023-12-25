@@ -178,7 +178,7 @@ SIMPLE_JWT = {
     "AUTH_COOKIE_SECURE": True,
     "AUTH_COOKIE_HTTP_ONLY": True,
     "AUTH_COOKIE_SAMESITE": "none",
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=1),
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=10),
     "TOKEN_OBTAIN_SERIALIZER": "user_auth.serializers.TokenObtainPairSerializerWithUsername",
 }
