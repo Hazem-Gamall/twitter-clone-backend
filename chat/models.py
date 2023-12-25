@@ -16,11 +16,6 @@ class Chat(models.Model):
 
     class Meta:
         unique_together = [["first_user_profile", "second_user_profile"]]
-        ordering = ["messages"]
-
-    @property
-    def last_message(self):
-        return self.messages.all().first()
 
     @property
     def last_message(self):
@@ -37,5 +32,15 @@ class Message(models.Model):
     last_edit = models.DateTimeField(auto_now=True)
     seen = models.BooleanField(default=False)
 
+    @property
+    def chat_users(self):
+        return [
+            self.chat.first_user_profile.user.id,
+            self.chat.second_user_profile.user.id,
+        ]
+
     class Meta:
         ordering = ["-creation"]
+
+    def get_user(self):
+        return self.receiver.user
