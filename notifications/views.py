@@ -9,7 +9,8 @@ from rest_framework.exceptions import ValidationError
 from .sse_renderer import ServerSentEventRenderer
 from rest_framework.renderers import JSONRenderer
 from django.http import StreamingHttpResponse
-from .redis_generator import listen_to_channel
+from .generators import NotificationGenerator
+from chat.models import Chat
 
 
 # Create your views here.
@@ -35,10 +36,7 @@ class NotificationSSEAPIView(APIView):
     renderer_classes = [ServerSentEventRenderer]
 
     def get(self, request):
-        generator = listen_to_channel(
-            lambda user_id, message: message["receiver"]["user"]["id"] == user_id,
-            request.user.id,
-        )
+        generator = NotificationGenerator(request).get_generator()
         response = StreamingHttpResponse(generator, content_type="text/event-stream")
         response["X-Accel-Buffering"] = "no"  # Disable buffering in nginx
         response["Cache-Control"] = "no-cache"  # Ensure clients don't cache the data

@@ -92,8 +92,11 @@ ASGI_APPLICATION = "main.asgi.application"
 WSGI_APPLICATION = "main.wsgi.application"
 
 REDIS_URL = env.str("REDIS_URL")
-PUSH_NOTIFICATIONS_CHANNEL = "test"
+PUSH_NOTIFICATIONS_CHANNEL = "notifications_channel"
 PUSH_NOTIFICATIONS_DELAY_SECONDS = 5
+CHATS_CHANNEL = "chats_channel"
+CHATS_DELAY_SECONDS = 5
+
 
 # Channel layer
 # https://channels.readthedocs.io/en/latest/topics/channel_layers.html
