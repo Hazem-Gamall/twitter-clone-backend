@@ -11,10 +11,17 @@ class CreateMessageSerializer(serializers.ModelSerializer):
 
 class RetrieveMessageSerializer(serializers.ModelSerializer):
     author = UserProfileSerializer()
+    chat_users = serializers.SerializerMethodField()
 
     class Meta:
         model = Message
         fields = "__all__"
+
+    def get_chat_users(self, obj: Message):
+        return [
+            obj.chat.first_user_profile.user.id,
+            obj.chat.second_user_profile.user.id,
+        ]
 
 
 class CreateChatSerializer(serializers.ModelSerializer):

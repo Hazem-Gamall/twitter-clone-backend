@@ -8,11 +8,10 @@ from .serializers import RetrieveMessageSerializer
 
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
-        print("hello")
         self.accept()
         self.chat_id = self.scope["url_route"]["kwargs"]["chat_id"]
         request_user = self.scope["user"]
-        print("ws req user", request_user)
+
         target_chat = Chat.objects.filter(id=self.chat_id)
         if not target_chat.exists():
             self.close(code=4000)
@@ -31,10 +30,6 @@ class ChatConsumer(WebsocketConsumer):
 
     # From WebSocket
     def receive(self, text_data=None):
-        print(
-            "text data",
-            text_data,
-        )
         text_data_json = json.loads(text_data)
         message = text_data_json["message"]
         message_object = Message.objects.create(
@@ -52,6 +47,5 @@ class ChatConsumer(WebsocketConsumer):
     def receive_message(self, event):
         message = event["message"]
 
-        print("sending back message to user")
         # Send back to the socket
         self.send(text_data=json.dumps(message))

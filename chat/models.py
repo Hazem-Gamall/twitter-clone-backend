@@ -35,6 +35,7 @@ class Message(models.Model):
     chat = models.ForeignKey(Chat, related_name="messages", on_delete=models.CASCADE)
     creation = models.DateTimeField(auto_now_add=True)
     last_edit = models.DateTimeField(auto_now=True)
+    seen = models.BooleanField(default=False)
 
     class Meta:
         ordering = ["-creation"]
