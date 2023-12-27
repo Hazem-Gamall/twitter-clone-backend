@@ -1,17 +1,23 @@
 from django.shortcuts import render
-from rest_framework import viewsets
+from rest_framework import viewsets, mixins
 from rest_framework.decorators import action
 from .serializers import PostSerializer, UpdatePostSerializer
 from .models import Post
-from rest_framework import permissions, status, response, exceptions
+from rest_framework import status, response, exceptions
+from main.permissions import IsOwnerOrSafeMethod
 from rest_framework.parsers import FormParser, MultiPartParser, JSONParser
 
 # Create your views here.
 
 
-class PostViewSet(viewsets.ModelViewSet):
+class PostViewSet(
+    mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet,
+):
     queryset = Post.objects.all()
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsOwnerOrSafeMethod]
 
     def get_serializer_class(self):
         if self.action in ["update", "partial_update"]:
@@ -27,7 +33,7 @@ class PostViewSet(viewsets.ModelViewSet):
         return response.Response(self.get_serializer(posts, many=True).data)
 
 
-class PostRepliesViewSet(viewsets.ViewSet):
+class PostRepliesViewSet(viewsets.GenericViewSet):
     queryset = Post.objects.all()
 
     def list(self, request, post_pk):
@@ -37,6 +43,7 @@ class PostRepliesViewSet(viewsets.ViewSet):
             raise exceptions.ValidationError(
                 {"post": "The id provided does not match any known post"}
             )
-        print(post.replies.all())
-        serialized_replies = PostSerializer(post.replies.all(), many=True).data
+        serialized_replies = PostSerializer(
+            self.paginate_queryset(post.replies.all()), many=True
+        ).data
         return response.Response(serialized_replies)
