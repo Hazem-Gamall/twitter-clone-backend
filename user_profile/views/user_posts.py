@@ -102,10 +102,12 @@ class UserPostsViewSet(viewsets.GenericViewSet):
 
             self.check_object_permissions(request, resource_user)
             if "following" not in request.GET:
-                print("not following")
                 return Response(
                     self.get_serializer(
-                        self.paginate_queryset(Post.objects.all()), many=True
+                        self.paginate_queryset(
+                            Post.objects.all().order_by("-creation")
+                        ),
+                        many=True,
                     ).data
                 )
             timeline_posts = []
