@@ -7,6 +7,7 @@ from posts.serializers import PostSerializer, MediaSerializer, CreatePostSeriali
 from rest_framework.parsers import MultiPartParser, JSONParser
 from user_profile.parsers import DictFormParser, DictMultiPartParser
 from rest_framework import status
+from posts.models import Post
 from rest_framework.exceptions import ValidationError
 from django.core.exceptions import ObjectDoesNotExist
 from main.settings import DEBUG
@@ -95,10 +96,19 @@ class UserPostsViewSet(viewsets.GenericViewSet):
     @action(methods=["GET"], detail=False, permission_classes=[IsOwner])
     def timeline(self, request, posts_user__username):
         username = posts_user__username
+
         try:
             resource_user = self.queryset.get(user__username=username)
 
             self.check_object_permissions(request, resource_user)
+            if "following" not in request.GET:
+                return Response(
+                    self.paginate_queryset(
+                        self.get_serializer(
+                            Post.objects.all().order_by("-creation"), many=True
+                        ).data
+                    )
+                )
             timeline_posts = []
             for following in resource_user.following.all():
                 timeline_posts += list(following.user_profile.posts.all())
