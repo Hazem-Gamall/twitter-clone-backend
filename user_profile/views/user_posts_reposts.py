@@ -5,6 +5,7 @@ from main.permissions import IsOwner
 from posts.serializers import PostSerializer
 from rest_framework import status
 from posts.models import Post
+from django.core.exceptions import ObjectDoesNotExist
 
 
 # TODO: generify
@@ -29,30 +30,32 @@ class UserPostsRepostsViewSet(viewsets.GenericViewSet):
 
         try:
             incoming_post = Post.objects.get(id=request.data.pop("post"))
-        except:
+        except ObjectDoesNotExist:
             return Response(
                 {"post": "the post id provided doesn't exist."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        if (
-            not self.queryset.get(user__username=username)
-            .posts.filter(embed=incoming_post)
-            .exists()
-        ):
-            repost_post = Post.objects.create(
-                user=self.queryset.get(user__username=username),
-                repost=True,
-                embed=incoming_post,
-            )
-            return Response(
-                self.get_serializer(
-                    repost_post,
-                ).data
-            )
-        else:
-            self.queryset.get(user__username=username).posts.filter(
-                embed=incoming_post
-            ).delete(),
+        try:
+            resource_user = self.queryset.get(user__username=username)
+            self.check_object_permissions(request, resource_user)
+
+            if not resource_user.posts.filter(embed=incoming_post).exists():
+                repost_post = Post.objects.create(
+                    user=resource_user,
+                    repost=True,
+                    embed=incoming_post,
+                )
+                return Response(
+                    self.get_serializer(
+                        repost_post,
+                    ).data
+                )
+            else:
+                # TODO: ambigious behaviour, enacpsulate in its own endpoint
+                resource_user.posts.filter(embed=incoming_post).delete(),
+
+        except ObjectDoesNotExist:
+            return Response(status=status.HTTP_403_FORBIDDEN)
 
         return Response(status=status.HTTP_200_OK)
