@@ -8,7 +8,10 @@ from notifications.models import Notification
 def like_handler(sender, **kwargs):
     user_profile = kwargs.pop("instance")
     action = kwargs.pop("action")
-    (post_id,) = kwargs.pop("pk_set")
+    pk_set = kwargs.pop("pk_set")
+    if not pk_set:
+        return
+    (post_id,) = pk_set
     post = Post.objects.get(id=post_id)
 
     if action == "post_add":  # Like
