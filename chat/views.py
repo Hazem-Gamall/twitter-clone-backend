@@ -11,7 +11,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 
-class MessageAPIView(APIView):
+class MessageSeenAPIView(APIView):
     queryset = Message.objects.all()
     permission_classes = [IsMessageReceiver]
 
