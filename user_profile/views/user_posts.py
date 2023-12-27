@@ -48,10 +48,10 @@ class UserPostsViewSet(viewsets.GenericViewSet):
     def create(self, request, posts_user__username):
         request_data = request.data
         mention_pattern = r"(?<=\s|^)@\w{1,35}(?=\s|$)"
-        print(request_data)
 
         username = posts_user__username
         resource_user = self.queryset.get(user__username=username)
+        self.check_object_permissions(request, resource_user)
         user_posts = resource_user.posts
         media_data = None
         print("media" in request_data)
