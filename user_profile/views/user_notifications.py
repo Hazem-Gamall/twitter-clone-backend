@@ -17,6 +17,7 @@ class UserNotificationsViewSet(viewsets.GenericViewSet):
         username = notifications_user__username
         try:
             resource_user = self.queryset.get(user__username=username)
+            self.check_object_permissions(request, resource_user)
             notifications = self.paginate_queryset(resource_user.notifications.all())
             return Response(self.get_serializer(notifications, many=True).data)
         except ObjectDoesNotExist:
