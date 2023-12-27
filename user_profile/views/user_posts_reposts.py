@@ -56,6 +56,10 @@ class UserPostsRepostsViewSet(viewsets.GenericViewSet):
                 resource_user.posts.filter(embed=incoming_post).delete(),
 
         except ObjectDoesNotExist:
-            return Response(status=status.HTTP_403_FORBIDDEN)
+            raise exceptions.ValidationError(
+                {
+                    "username": "The username provided for the account to follow did not match any know users."
+                }
+            )
 
         return Response(status=status.HTTP_200_OK)
