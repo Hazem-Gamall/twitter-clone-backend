@@ -1,4 +1,4 @@
-FROM nginx:stable-alpine
+FROM nginx:alpine3.18
 RUN apk add --update --no-cache python3 && ln -sf python3 /usr/bin/python
 RUN python -m ensurepip
 RUN mkdir /project
