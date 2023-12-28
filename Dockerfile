@@ -16,6 +16,7 @@ ENV SECRET_KEY==r*2jzwrl=iyyhlvvb0!uzp-+67@#x57tsm8)6i-5xz81#!vfk
 ENV CORS_ORIGIN_WHITELIST=http://localhost,http://twitter-clone-frontend,http://148.100.108.153,http://hazemgamal.uk.to/
 ENV CSRF_TRUSTED_ORIGINS=http://twitter-clone-api,http://localhost,http://148.100.108.153,http://hazemgamal.uk.to/
 ENV REDIS_URL=redis://twitter-clone-redis:6379
+ENV DATABASE_URL=sqlite:///db.sqlite3
 
 RUN python manage.py collectstatic
 RUN mv static /static
