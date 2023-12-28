@@ -175,7 +175,7 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     "REFRESH_COOKIE": "refresh_token",
     "AUTH_COOKIE": "access_token",
-    "AUTH_COOKIE_SECURE": True,
+    "AUTH_COOKIE_SECURE": False,
     "AUTH_COOKIE_HTTP_ONLY": True,
     "AUTH_COOKIE_SAMESITE": "none",
     "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
