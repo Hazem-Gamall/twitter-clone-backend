@@ -30,6 +30,21 @@ class UserProfile(ModelWithUser):
     def chats(self):
         return self.chat_set1.all() | self.chat_set2.all()
 
+    @property
+    def name(self):
+        return self.user.first_name
+
+    def get_followers_in_common(self, otherUser: "UserProfile"):
+        followers_in_common = (
+            self.followers.all()
+            .values_list("following_user_profile", flat=True)
+            .intersection(
+                otherUser.following.all().values_list("user_profile", flat=True)
+            )
+        )
+
+        return followers_in_common
+
     def get_user(self):
         return self.user
 
@@ -65,3 +80,6 @@ class UserFollowing(models.Model):
 
     # You can even add info about when user started following
     created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        return f"{self.following_user_profile} follows {self.user_profile}"

@@ -1,11 +1,9 @@
 from rest_framework.exceptions import ValidationError
-from rest_framework.response import Response
-from rest_framework import status
 from rest_framework import serializers
 from main.serializer_validation_mixins import ReadOnlyOrUnkownFieldErrorMixin
 from .models import Media, Post
 from user_profile.models import UserProfile
-from user_profile.serializers import MentionSerializer, UserProfileSerializer
+from user_profile.serializers import MentionSerializer
 from main import settings
 
 
@@ -136,10 +134,16 @@ class PostSerializer(ReadOnlyOrUnkownFieldErrorMixin, serializers.ModelSerialize
         return PostUserSerializer(instance=obj.user).data
 
     def get_liked_by_user(self, obj: Post):
-        return obj.likes.filter(user=self.context["request"].user).exists()
+        return (
+            "request" in self.context
+            and obj.likes.filter(user=self.context["request"].user).exists()
+        )
 
     def get_reposted_by_user(self, obj: Post):
-        return self.context["request"].user.profile.posts.filter(embed=obj).exists()
+        return (
+            "request" in self.context
+            and self.context["request"].user.profile.posts.filter(embed=obj).exists()
+        )
 
     def get_repost_count(self, obj: Post):
         return obj.reposts.count()

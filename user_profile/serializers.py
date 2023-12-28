@@ -21,12 +21,13 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             "password": {"write_only": True},
         }
-        fields = ["username", "email", "password", "name", "date_joined"]
+        fields = ["id", "username", "email", "password", "name", "date_joined"]
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer()
     followed_by_user = serializers.SerializerMethodField("get_followed_by_user")
+    followers_in_common = serializers.SerializerMethodField()
 
     class Meta:
         model = UserProfile
@@ -44,6 +45,22 @@ class UserProfileSerializer(serializers.ModelSerializer):
                 {"following/followers": "You should use the dedicated endpoint"}
             )
         return super().validate(attrs)
+
+    def get_followers_in_common(self, obj: UserProfile):
+        if not "request" in self.context:
+            return []
+        auth_user_profile = self.context["request"].user.profile
+
+        followers_in_common = obj.get_followers_in_common(auth_user_profile)
+        count = followers_in_common.count()
+        return {
+            "users": UserProfileSerializer(
+                UserProfile.objects.in_bulk((followers_in_common[:2])).values(),
+                many=True,
+            ).data,
+            "count": count,
+            "remaining": count - 2 if count > 2 else 0,
+        }
 
     def get_followed_by_user(self, obj: UserProfile):
         if "request" in self.context:

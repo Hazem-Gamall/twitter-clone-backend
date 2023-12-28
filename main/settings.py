@@ -35,13 +35,16 @@ DEBUG = env.bool("DEBUG", default=False)
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
+
 CORS_ORIGIN_WHITELIST = env.list("CORS_ORIGIN_WHITELIST")
+CORS_ALLOW_CREDENTIALS = True
 
 
 INSTALLED_APPS = [
     "daphne",
     "channels",
     "chat",
+    "notifications",
     "user_auth",
     "posts",
     "user_profile.apps.UserProfileConfig",
@@ -88,6 +91,12 @@ ASGI_APPLICATION = "main.asgi.application"
 
 WSGI_APPLICATION = "main.wsgi.application"
 
+REDIS_URL = env.str("REDIS_URL")
+PUSH_NOTIFICATIONS_CHANNEL = "notifications_channel"
+PUSH_NOTIFICATIONS_DELAY_SECONDS = 5
+CHATS_CHANNEL = "chats_channel"
+CHATS_DELAY_SECONDS = 5
+
 
 # Channel layer
 # https://channels.readthedocs.io/en/latest/topics/channel_layers.html
@@ -95,7 +104,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [env.str("REDIS_HOST")],
+            "hosts": [REDIS_URL],
         },
     },
 }
@@ -155,9 +164,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"
     ],
-    "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework_simplejwt.authentication.JWTAuthentication"
-    ],
+    "DEFAULT_AUTHENTICATION_CLASSES": ["user_auth.authenticate.CustomAuthentication"],
     # Flexible yet not very performant when you have a lot of data
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 5,
@@ -166,6 +173,12 @@ REST_FRAMEWORK = {
 
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=20),
+    "REFRESH_COOKIE": "refresh_token",
+    "AUTH_COOKIE": "access_token",
+    "AUTH_COOKIE_SECURE": True,
+    "AUTH_COOKIE_HTTP_ONLY": True,
+    "AUTH_COOKIE_SAMESITE": "none",
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=10),
     "TOKEN_OBTAIN_SERIALIZER": "user_auth.serializers.TokenObtainPairSerializerWithUsername",
 }
