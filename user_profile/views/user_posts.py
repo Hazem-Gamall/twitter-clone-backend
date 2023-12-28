@@ -22,23 +22,24 @@ class UserPostsViewSet(viewsets.GenericViewSet):
 
     def list(self, request, posts_user__username):
         username = posts_user__username
+        try:
+            resource_user = self.queryset.get(user__username=username)
+        except ObjectDoesNotExist:
+            raise ValidationError({"username", {"no user exists with this username"}})
 
-        if (
-            "with_replies" in request.query_params
-            and request.query_params["with_replies"] == "true"
-        ):
-            posts = (
-                self.queryset.get(user__username=username)
-                .posts.all()
-                .order_by("-creation")
+        filter = "filter" in request.query_params and request.query_params.get("filter")
+
+        if not filter:
+            posts = self.queryset.get(user__username=username).posts.filter(
+                reply_to__isnull=True
             )
-        else:
-            posts = (
-                self.queryset.get(user__username=username)
-                .posts.filter(reply_to__isnull=True)
-                .order_by("-creation")
-            )
-        posts = self.paginate_queryset(posts)
+        elif filter == "with_replies":
+            posts = resource_user.posts.all()
+        elif filter == "likes":
+            posts = resource_user.liked_posts.all()
+        elif filter == "media":
+            posts = resource_user.posts.filter(media__isnull=False)
+        posts = self.paginate_queryset(posts.order_by("-creation"))
         serialized_posts = self.get_serializer(
             posts,
             many=True,

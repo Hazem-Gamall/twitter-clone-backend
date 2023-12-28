@@ -13,15 +13,6 @@ class UserPostsLikesViewSet(viewsets.GenericViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = PostSerializer
 
-    def list(self, request, likes_user__username):
-        username = likes_user__username
-        liked_posts = self.queryset.get(user__username=username).liked_posts.all()
-        serialized_liked_posts = self.get_serializer(
-            liked_posts,
-            many=True,
-        ).data
-        return Response(serialized_liked_posts)
-
     def create(self, request, likes_user__username):
         if "post" not in request.data:
             raise exceptions.ValidationError({"post": "required field"})
