@@ -49,6 +49,9 @@ class UserProfileSerializer(serializers.ModelSerializer):
     def get_followers_in_common(self, obj: UserProfile):
         if not "request" in self.context:
             return []
+        if not self.context["request"].user.is_authenticated:
+            return []
+
         auth_user_profile = self.context["request"].user.profile
 
         followers_in_common = obj.get_followers_in_common(auth_user_profile)
