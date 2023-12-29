@@ -3,6 +3,7 @@ import json
 from rest_framework.permissions import BasePermission
 from django.conf import settings
 from .redis_client import get_async_redis_client
+from datetime import datetime
 
 
 class AsyncBaseGenerator:
@@ -53,8 +54,10 @@ class AsyncBaseGenerator:
                     timeout=settings.PUSH_NOTIFICATIONS_DELAY_SECONDS,
                     ignore_subscribe_messages=True,
                 )
+
                 if message is None:
-                    yield ""
+                    message = {"ping": datetime.now()}
+                    yield f"data: {json.dumps(message, default=str)}\n\n"
                     continue
 
                 message = json.loads(message["data"])
